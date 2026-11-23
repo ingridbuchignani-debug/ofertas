@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ofertas</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ofertas">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1f6f4a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root {
+    --verde: #1f6f4a; --verde-claro: #e8f3ed; --texto: #1d2420; --suave: #66716b;
+    --borda: #dfe5e1; --fundo: #f6f8f7; --branco: #fff; --ml: #2d3277; --shopee: #c2410c;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--fundo); color: var(--texto); font-size: 16px; }
+  header { background: var(--verde); color: #fff; padding: calc(14px + env(safe-area-inset-top)) 18px 14px; }
+  header h1 { margin: 0; font-size: 20px; font-weight: 700; }
+  header p { margin: 2px 0 0; font-size: 13px; opacity: .85; }
+  nav { display: flex; background: var(--branco); border-bottom: 1px solid var(--borda); position: sticky; top: 0; z-index: 5; }
+  nav button { flex: 1; border: 0; background: none; padding: 13px 4px; font-size: 14px; color: var(--suave); font-weight: 600; border-bottom: 3px solid transparent; }
+  nav button.ativo { color: var(--verde); border-bottom-color: var(--verde); }
+  main { padding: 16px; max-width: 560px; margin: 0 auto; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+  .aba { display: none; } .aba.ativa { display: block; }
+  .card { background: var(--branco); border: 1px solid var(--borda); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .card h2 { font-size: 15px; margin: 0 0 12px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--suave); margin: 12px 0 6px; }
+  label:first-of-type { margin-top: 0; }
+  input, textarea { width: 100%; font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--borda); border-radius: 10px; background: #fff; color: var(--texto); }
+  input:focus, textarea:focus { outline: 2px solid var(--verde); border-color: transparent; }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.4; }
+  .linha { display: flex; gap: 10px; } .linha > * { flex: 1; }
+  .com-botao { display: flex; gap: 8px; } .com-botao input { flex: 1; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 12px;
+    padding: 14px 16px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn-principal { background: var(--verde); color: #fff; width: 100%; font-size: 17px; }
+  .btn-secundario { background: var(--verde-claro); color: var(--verde); }
+  .btn-pequeno { padding: 10px 14px; font-size: 14px; white-space: nowrap; }
+  .botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--borda); background: #fff; border-radius: 999px; padding: 9px 14px; font: inherit; font-size: 14px; color: var(--texto); }
+  .chip.sel { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .loja { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; color: #fff; }
+  .loja.ml { background: var(--ml); } .loja.shopee { background: var(--shopee); } .loja.outra { background: var(--suave); }
+  .previa { white-space: pre-wrap; background: #e7f6dd; border-radius: 12px; padding: 12px 14px; font-size: 15px; line-height: 1.45; word-break: break-word; }
+  .previa b { font-weight: 700; } .previa s { color: var(--suave); }
+  .dica { font-size: 13px; color: var(--suave); margin: 8px 0 0; line-height: 1.4; }
+  .desc { font-size: 13px; font-weight: 700; color: var(--verde); margin-top: 6px; min-height: 18px; }
+  .hist-item { border-top: 1px solid var(--borda); padding: 12px 0; display: flex; gap: 10px; align-items: center; }
+  .hist-item:first-child { border-top: 0; padding-top: 0; }
+  .hist-info { flex: 1; min-width: 0; }
+  .hist-info strong { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-info span { font-size: 12px; color: var(--suave); }
+  .vazio { color: var(--suave); font-size: 14px; text-align: center; padding: 10px 0; }
+  .aviso { background: #fff7e6; border: 1px solid #f3dfb0; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.45; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(120px);
+    background: #1d2420; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 14px; transition: transform .25s; z-index: 20; }
+  .toast.mostra { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ofertas</h1>
+  <p>Monte e envie ofertas com o seu link de afiliado</p>
+</header>
+<nav>
+  <button data-aba="criar" class="ativo">Criar</button>
+  <button data-aba="historico">Histórico</button>
+  <button data-aba="config">Ajustes</button>
+</nav>
+
+<main>
+  <!-- CRIAR -->
+  <section id="criar" class="aba ativa">
+    <div class="card">
+      <h2>Oferta</h2>
+      <label for="link">Link de afiliado</label>
+      <div class="com-botao">
+        <input id="link" type="url" inputmode="url" placeholder="Cole o seu link aqui" autocomplete="off">
+        <button class="btn btn-secundario btn-pequeno" id="colar">Colar</button>
+      </div>
+      <div id="lojaDetectada" class="dica"></div>
+
+      <label for="nome">Nome do produto</label>
+      <input id="nome" type="text" placeholder="Ex: Barraca Iglu 4 Pessoas" autocomplete="off">
+
+      <div class="linha">
+        <div>
+          <label for="antigo">Preço antigo</label>
+          <input id="antigo" type="text" inputmode="decimal" placeholder="459,00">
+        </div>
+        <div>
+          <label for="preco">Preço atual</label>
+          <input id="preco" type="text" inputmode="decimal" placeholder="289,90">
+        </div>
+      </div>
+      <div id="desconto" class="desc"></div>
+
+      <label for="cupom">Cupom (opcional)</label>
+      <input id="cupom" type="text" placeholder="Ex: ACAMPA10" autocomplete="off">
+
+      <label for="extra">Observação (opcional)</label>
+      <input id="extra" type="text" placeholder="Ex: Frete grátis" autocomplete="off">
+    </div>
+
+    <div class="card">
+      <h2>Prévia da mensagem</h2>
+      <div id="previa" class="previa"></div>
+      <div class="botoes">
+        <button class="btn btn-principal" id="enviar">Enviar no WhatsApp</button>
+        <button class="btn btn-secundario" id="copiar">Copiar mensagem</button>
+        <button class="btn btn-secundario" id="limpar">Limpar campos</button>
+      </div>
+      <p class="dica">O WhatsApp abre com a mensagem pronta. É só escolher o grupo.</p>
+    </div>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section id="historico" class="aba">
+    <div class="card">
+      <h2>Ofertas enviadas</h2>
+      <div id="listaHist"></div>
+    </div>
+    <button class="btn btn-secundario" style="width:100%" id="apagarHist">Apagar histórico</button>
+  </section>
+
+  <!-- AJUSTES -->
+  <section id="config" class="aba">
+    <div class="card">
+      <h2>Modelo da mensagem</h2>
+      <textarea id="modelo" rows="9"></textarea>
+      <p class="dica">Use: {nome}, {preco}, {precoAntigo}, {desconto}, {cupom}, {extra}, {link}.
+        *texto* = negrito, ~texto~ = riscado, _texto_ = itálico. Linhas com um campo vazio somem sozinhas.</p>
+      <div class="botoes">
+        <button class="btn btn-principal" id="salvarModelo">Salvar modelo</button>
+        <button class="btn btn-secundario" id="restaurarModelo">Voltar ao modelo padrão</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Meus nichos</h2>
+      <div class="chips" id="nichos"></div>
+      <p class="dica">Usados na busca automática de ofertas.</p>
+    </div>
+
+    <div class="aviso">
+      <strong>Busca automática: em breve.</strong><br>
+      Assim que as contas de afiliado da Shopee e do Mercado Livre forem aprovadas, as melhores ofertas dos seus nichos aparecem aqui sozinhas.
+    </div>
+    <p class="dica" style="text-align:center;margin-top:18px">Seus ajustes ficam salvos só neste celular.<br>
+      Para instalar: no Safari, toque em Compartilhar e depois em Adicionar à Tela de Início.</p>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var MODELO_PADRAO = '*{nome}*\n\nDe ~R$ {precoAntigo}~ por *R$ {preco}*\n{desconto}% de desconto\n{extra}\nCupom: *{cupom}*\n\nCompre aqui: {link}\n\n_Preço sujeito a alteração._';
+  var NICHOS = ['Escoteiro e camping', 'Casa e cozinha', 'Tecnologia', 'Beleza', 'Pets', 'Bebê', 'Ferramentas', 'Esportes', 'Games'];
+
+  // armazenamento local protegido
+  function ler(chave, padrao) {
+    try { var v = localStorage.getItem('ofertas.' + chave); return v === null ? padrao : JSON.parse(v); }
+    catch (e) { return padrao; }
+  }
+  function gravar(chave, valor) {
+    try { localStorage.setItem('ofertas.' + chave, JSON.stringify(valor)); } catch (e) {}
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var campos = ['link', 'nome', 'antigo', 'preco', 'cupom', 'extra'];
+
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('mostra');
+    clearTimeout(toast.timer); toast.timer = setTimeout(function () { t.classList.remove('mostra'); }, 2200);
+  }
+
+  // números no formato brasileiro
+  function numero(txt) {
+    if (!txt) return null;
+    var s = String(txt).replace(/[^\d,.]/g, '');
+    if (!s) return null;
+    if (s.indexOf(',') > -1) s = s.replace(/\./g, '').replace(',', '.');
+    else if ((s.match(/\./g) || []).length > 1 || /\.\d{3}$/.test(s)) s = s.replace(/\./g, '');
+    var n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
+  function reais(n) {
+    return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function loja(link) {
+    var l = (link || '').toLowerCase();
+    if (/meli\.la|mercadoli(vre|bre)|mercadolivre/.test(l)) return 'ml';
+    if (/shopee|shp\.ee/.test(l)) return 'shopee';
+    return l ? 'outra' : '';
+  }
+  var NOME_LOJA = { ml: 'Mercado Livre', shopee: 'Shopee', outra: 'Outra loja' };
+
+  function dados() {
+    var antigo = numero($('antigo').value), preco = numero($('preco').value);
+    var desconto = (antigo && preco && antigo > preco) ? Math.round((1 - preco / antigo) * 100) : null;
+    return {
+      link: $('link').value.trim(),
+      nome: $('nome').value.trim(),
+      precoAntigo: antigo && desconto ? reais(antigo) : '',
+      preco: preco ? reais(preco) : '',
+      desconto: desconto ? String(desconto) : '',
+      cupom: $('cupom').value.trim(),
+      extra: $('extra').value.trim()
+    };
+  }
+
+  function montar(d) {
+    var modelo = ler('modelo', MODELO_PADRAO);
+    var linhas = modelo.split('\n'), saida = [];
+    for (var i = 0; i < linhas.length; i++) {
+      var linha = linhas[i], vazio = false;
+      linha = linha.replace(/\{(\w+)\}/g, function (_, k) {
+        var v = d[k];
+        if (v === undefined || v === '') { vazio = true; return ''; }
+        return v;
+      });
+      if (!vazio) saida.push(linha);
+    }
+    return saida.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  function escapar(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function formatarPrevia(txt) {
+    return escapar(txt)
+      .replace(/\*([^*\n]+)\*/g, '<b>$1</b>')
+      .replace(/~([^~\n]+)~/g, '<s>$1</s>')
+      .replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g, '$1<i>$2</i>');
+  }
+
+  function atualizar() {
+    var d = dados();
+    var lj = loja(d.link);
+    $('lojaDetectada').innerHTML = lj ? 'Loja: <span class="loja ' + lj + '">' + NOME_LOJA[lj] + '</span>' : '';
+    $('desconto').textContent = d.desconto ? d.desconto + '% de desconto' : '';
+    var msg = montar(d);
+    $('previa').innerHTML = msg ? formatarPrevia(msg) : '<span style="color:var(--suave)">Preencha os campos para ver a mensagem.</span>';
+    gravar('rascunho', campos.reduce(function (o, c) { o[c] = $(c).value; return o; }, {}));
+    return { d: d, msg: msg, loja: lj };
+  }
+
+  function validar(r) {
+    if (!r.d.link) { toast('Cole o link de afiliado'); $('link').focus(); return false; }
+    if (!r.d.nome) { toast('Escreva o nome do produto'); $('nome').focus(); return false; }
+    if (!r.d.preco) { toast('Informe o preço atual'); $('preco').focus(); return false; }
+    return true;
+  }
+
+  function salvarHistorico(r) {
+    var h = ler('historico', []);
+    h.unshift({ nome: r.d.nome, loja: r.loja, preco: r.d.preco, quando: new Date().toISOString(),
+      campos: campos.reduce(function (o, c) { o[c] = $(c).value; return o; }, {}) });
+    gravar('historico', h.slice(0, 50));
+  }
+
+  function desenharHistorico() {
+    var h = ler('historico', []), el = $('listaHist');
+    if (!h.length) { el.innerHTML = '<div class="vazio">Nenhuma oferta enviada ainda.</div>'; return; }
+    el.innerHTML = h.map(function (it, i) {
+      var dt = new Date(it.quando);
+      var quando = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return '<div class="hist-item"><div class="hist-info"><strong>' + escapar(it.nome) + '</strong>' +
+        '<span>' + (it.loja ? NOME_LOJA[it.loja] + ' · ' : '') + 'R$ ' + escapar(it.preco || '') + ' · ' + quando + '</span></div>' +
+        '<button class="btn btn-secundario btn-pequeno" data-reusar="' + i + '">Reusar</button></div>';
+    }).join('');
+  }
+
+  // abas
+  var botoesAba = document.querySelectorAll('nav button');
+  botoesAba.forEach(function (b) {
+    b.addEventListener('click', function () {
+      botoesAba.forEach(function (x) { x.classList.toggle('ativo', x === b); });
+      document.querySelectorAll('.aba').forEach(function (s) { s.classList.toggle('ativa', s.id === b.dataset.aba); });
+      if (b.dataset.aba === 'historico') desenharHistorico();
+      window.scrollTo(0, 0);
+    });
+  });
+
+  // campos
+  campos.forEach(function (c) { $(c).addEventListener('input', atualizar); });
+
+  $('colar').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { $('link').focus(); toast('Toque no campo e cole o link'); return; }
+    navigator.clipboard.readText().then(function (t) {
+      $('link').value = (t || '').trim(); atualizar();
+      if (t) toast('Link colado');
+    }).catch(function () { $('link').focus(); toast('Toque no campo e cole o link'); });
+  });
+
+  $('enviar').addEventListener('click', function () {
+    var r = atualizar(); if (!validar(r)) return;
+    salvarHistorico(r);
+    window.location.href = 'https://wa.me/?text=' + encodeURIComponent(r.msg);
+  });
+
+  $('copiar').addEventListener('click', function () {
+    var r = atualizar(); if (!validar(r)) return;
+    var feito = function () { salvarHistorico(r); toast('Mensagem copiada'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(r.msg).then(feito).catch(function () { copiarAntigo(r.msg); feito(); });
+    } else { copiarAntigo(r.msg); feito(); }
+  });
+  function copiarAntigo(txt) {
+    var t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', '');
+    t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t);
+    t.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(t);
+  }
+
+  $('limpar').addEventListener('click', function () {
+    campos.forEach(function (c) { $(c).value = ''; }); atualizar(); window.scrollTo(0, 0);
+  });
+
+  $('listaHist').addEventListener('click', function (e) {
+    var i = e.target.getAttribute('data-reusar'); if (i === null) return;
+    var it = ler('historico', [])[+i]; if (!it) return;
+    campos.forEach(function (c) { $(c).value = it.campos[c] || ''; });
+    atualizar(); botoesAba[0].click(); toast('Oferta carregada');
+  });
+
+  $('apagarHist').addEventListener('click', function () {
+    gravar('historico', []); desenharHistorico(); toast('Histórico apagado');
+  });
+
+  // modelo
+  $('modelo').value = ler('modelo', MODELO_PADRAO);
+  $('salvarModelo').addEventListener('click', function () { gravar('modelo', $('modelo').value); atualizar(); toast('Modelo salvo'); });
+  $('restaurarModelo').addEventListener('click', function () { $('modelo').value = MODELO_PADRAO; gravar('modelo', MODELO_PADRAO); atualizar(); toast('Modelo padrão restaurado'); });
+
+  // nichos
+  function desenharNichos() {
+    var sel = ler('nichos', ['Escoteiro e camping']);
+    $('nichos').innerHTML = NICHOS.map(function (n) {
+      return '<button class="chip' + (sel.indexOf(n) > -1 ? ' sel' : '') + '" data-nicho="' + n + '">' + n + '</button>';
+    }).join('');
+  }
+  $('nichos').addEventListener('click', function (e) {
+    var n = e.target.getAttribute('data-nicho'); if (!n) return;
+    var sel = ler('nichos', ['Escoteiro e camping']);
+    var i = sel.indexOf(n); if (i > -1) sel.splice(i, 1); else sel.push(n);
+    gravar('nichos', sel); desenharNichos();
+  });
+  desenharNichos();
+
+  // rascunho
+  var rasc = ler('rascunho', null);
+  if (rasc) campos.forEach(function (c) { $(c).value = rasc[c] || ''; });
+  atualizar();
+})();
+</script>
+</body>
+</html>
